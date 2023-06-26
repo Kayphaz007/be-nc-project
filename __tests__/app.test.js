@@ -24,4 +24,9 @@ describe("200: /api/topics", () => {
         });
       });
   });
+  test("404: should return an error if wrong endpoint is called", () => {
+    return request(app)
+      .get("/api/wrongendpoint")
+      .expect(404)
+  });
 });
