@@ -30,3 +30,20 @@ describe("200: /api/topics", () => {
       .expect(404)
   });
 });
+describe("200: /api", () => {
+  test("should return an key value pairs of endpoint objects", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({body})=>{
+        const { api } = body
+        for(let key in api){
+          expect(api[key]).toHaveProperty("description", expect.any(String));
+          expect(api[key]).toHaveProperty("queries", expect.any(Array));
+          expect(api[key]).toHaveProperty("format", expect.any(String));
+          expect(api[key]).toHaveProperty("exampleResponse", expect.any(Object));
+        }
+      })
+
+  });
+});
