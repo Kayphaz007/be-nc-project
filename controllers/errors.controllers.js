@@ -8,7 +8,7 @@ function handleCustomErrors(err, req, res, next) {
 
 function handlePostgressErrors(err, req, res, next) {
   if (err.code) {
-    res.status(400).send({ msg: "Invalid input" });
+    res.status(400).send({ msg: "Invalid Input" });
   } else {
     next(err);
   }
