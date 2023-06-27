@@ -47,3 +47,42 @@ describe("200: /api", () => {
 
   });
 });
+describe("200: /api/articles", () => {
+  test("should get an article by its id", () => {
+    return request(app)
+      .get("/api/articles/5")
+      .expect(200)
+      .then(({body})=>{
+        const {article} = body
+          expect(article).toHaveProperty("article_id", 5);
+          expect(article).toHaveProperty("title", expect.any(String));
+          expect(article).toHaveProperty("topic", expect.any(String));
+          expect(article).toHaveProperty("author", expect.any(String));
+          expect(article).toHaveProperty("body", expect.any(String));
+          expect(article).toHaveProperty("created_at", expect.any(String));
+          expect(article).toHaveProperty("votes", expect.any(Number));
+          expect(article).toHaveProperty("article_img_url", expect.any(String));
+      })
+
+  });
+  test("should return error with msg Not Found for request not in database", () => {
+    return request(app)
+      .get("/api/articles/99999999")
+      .expect(404)
+      .then(({body})=>{
+        const {msg}= body
+        expect(msg).toBe("Not Found")
+      })
+
+  });
+  test("should return error with msg Invalid Input for wrong user input", () => {
+    return request(app)
+      .get("/api/articles/hello")
+      .expect(400)
+      .then(({body})=>{
+        const {msg}= body
+        expect(msg).toBe("Invalid Input")
+      })
+
+  });
+});
