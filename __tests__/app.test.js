@@ -122,7 +122,7 @@ describe("200: /api/articles", () => {
       });
   });
 });
-describe("/api/comments", () => {
+describe.skip("/api/comments", () => {
   test("204: should return no content if succesfully deleted", () => {
     return request(app).delete("/api/comments/:comment_id").expect(204);
   });

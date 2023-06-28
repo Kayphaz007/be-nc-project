@@ -19,7 +19,7 @@ app.get("/api/topics", getAllTopics);
 app.get("/api/articles", getAllArticles);
 app.get("/api/articles/:article_id", getArticleById);
 
-app.delete("/api/comments/:comment_id", deleteCommentById);
+// app.delete("/api/comments/:comment_id", deleteCommentById);
 
 app.use(handleCustomErrors);
 app.use(handlePostgressErrors);
