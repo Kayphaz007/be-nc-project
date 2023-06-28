@@ -32,12 +32,11 @@ function selectArticleById(article_id) {
 }
 
 function selectAllCommentsByArticleId(article_id) {
+    if(isNaN(article_id)){
+        return Promise.reject({ status: 400, msg: "Invalid Request"})
+    }
     return db.query('SELECT * FROM comments WHERE article_id = $1', [article_id]).then(({rows})=>{
-        if (rows.length != 0){
-            return rows
-        } else {
-            return Promise.reject({ status: 404, msg: "Not Found"})
-        }
+        return rows
     })
 }
 module.exports = {

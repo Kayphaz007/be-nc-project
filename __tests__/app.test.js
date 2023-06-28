@@ -138,13 +138,22 @@ describe("200: /api/articles", () => {
 
       });
   });
-  test("should return error with msg Not Found for request not in database", () => {
+  test("should return 200 with empty array for request with no comments", () => {
     return request(app)
-      .get("/api/articles/99999999/comments")
-      .expect(404)
+      .get("/api/articles/37/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const { comments } = body;
+        expect(comments).toEqual([]);
+      });
+  });
+  test("should return 400 with msg Invalid Request for request with invalid id", () => {
+    return request(app)
+      .get("/api/articles/hello/comments")
+      .expect(400)
       .then(({ body }) => {
         const { msg } = body;
-        expect(msg).toBe("Not Found");
+        expect(msg).toBe("Invalid Request");
       });
   });
 });
