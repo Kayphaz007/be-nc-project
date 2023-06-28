@@ -140,7 +140,7 @@ describe("200: /api/articles", () => {
   });
   test("should return 200 with empty array for request with no comments", () => {
     return request(app)
-      .get("/api/articles/37/comments")
+      .get("/api/articles/13/comments")
       .expect(200)
       .then(({ body }) => {
         const { comments } = body;
@@ -154,6 +154,15 @@ describe("200: /api/articles", () => {
       .then(({ body }) => {
         const { msg } = body;
         expect(msg).toBe("Invalid Request");
+      });
+  });
+  test("should return 404 with msg No Resource Found for request with valid id but not in database", () => {
+    return request(app)
+      .get("/api/articles/99999/comments")
+      .expect(404)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("No Resource Found");
       });
   });
 });
