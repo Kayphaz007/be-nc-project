@@ -116,9 +116,14 @@ describe("200: /api/articles", () => {
       .then(({ body }) => {
         const { articles } = body;
         expect(articles).toBeSorted({
-          key: 'created_at',
-          descending: true
+          key: "created_at",
+          descending: true,
         });
       });
+  });
+});
+describe("/api/comments", () => {
+  test("204: should return no content if succesfully deleted", () => {
+    return request(app).delete("/api/comments/:comment_id").expect(204);
   });
 });
