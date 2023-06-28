@@ -39,5 +39,21 @@
         }
       ]
     }
+  },
+  "GET /api/articles/:article_id/comments": {
+    "description": "get all comments for an article",
+    "queries": [],
+    "format": "arrays",
+    "exampleResponse": {
+      "comment": [{ "body": "This is my message"}]
+    }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "add a comment for an article",
+    "queries": [],
+    "format": "arrays",
+    "exampleResponse": {
+      "comment": [{ "body": "This is my message"}]
+    }
   }
 }

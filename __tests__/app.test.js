@@ -121,4 +121,72 @@ describe("200: /api/articles", () => {
         });
       });
   });
+  describe("POST: /api/articles/:article_id/comments", ()=>{
+    test('should return an array of 1 element', () => {
+      return request(app)
+      .post("/api/articles/5/comments")
+      .send({
+        username: "rogersop",
+        body: "Hello I am new Here"
+      })
+      .expect(201)
+      .then(({body})=>{
+        const {comment} = body;
+        expect(comment.length).toBe(1)
+      })
+    })
+    test('should return the posted comment', () => {
+      return request(app)
+      .post("/api/articles/5/comments")
+      .send({
+        username: "rogersop",
+        body: "Hello I am new Here"
+      })
+      .expect(201)
+      .then(({body})=>{
+        const {comment} = body;
+        expect(comment[0].body).toBe("Hello I am new Here")
+      })
+    })
+    test('should return an error if user does not exist', () => {
+      return request(app)
+      .post("/api/articles/5/comments")
+      .send({
+        username: "kayphaz007",
+        body: "Hello I am new Here"
+      })
+      .expect(404)
+      .then(({body})=>{
+        const {msg} = body;
+        expect(msg).toBe("User not found")
+      })
+    })
+    test('should return an error if article does not exist', () => {
+      return request(app)
+      .post("/api/articles/9999/comments")
+      .send({
+        username: "rogersop",
+        body: "Hello I am new Here"
+      })
+      .expect(404)
+      .then(({body})=>{
+        const {msg} = body;
+        expect(msg).toBe("Article not found")
+      })
+    })
+    test('should return an error if body is empty', () => {
+      return request(app)
+      .post("/api/articles/5/comments")
+      .send({
+        username: "kayphaz007",
+        body: ""
+      })
+      .expect(400)
+      .then(({body})=>{
+        const {msg} = body;
+        expect(msg).toBe("Invalid Request")
+      })
+    })
+
+  })
 });
