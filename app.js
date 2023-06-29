@@ -6,16 +6,26 @@ const {
   handleServerErrors,
 } = require("./controllers/errors.controllers");
 const { getAllApi } = require("./controllers/api.controllers");
-const { getArticleById, getAllArticles, getCommentsByArticleId } = require("./controllers/articles.controllers");
+
+const {
+  getArticleById,
+  getAllArticles,
+  getCommentsByArticleId,
+  postCommentByArticleId,
+} = require("./controllers/articles.controllers");
 const app = express();
 
-app.get("/api", getAllApi)
+app.use(express.json());
+
+app.get("/api", getAllApi);
 
 app.get("/api/topics", getAllTopics);
 
-app.get("/api/articles", getAllArticles)
-app.get("/api/articles/:article_id", getArticleById)
-app.get("/api/articles/:article_id/comments", getCommentsByArticleId)
+app.get("/api/articles", getAllArticles);
+app.get("/api/articles/:article_id", getArticleById);
+app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
+
+app.post("/api/articles/:article_id/comments", postCommentByArticleId);
 
 app.use(handleCustomErrors);
 app.use(handlePostgressErrors);
