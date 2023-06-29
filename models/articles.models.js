@@ -1,5 +1,5 @@
 const db = require("../db/connection");
-const { reduceRight } = require("../db/data/test-data/articles");
+// const { reduceRight } = require("../db/data/test-data/articles");
 
 function selectAllArticles() {
   return db
@@ -65,4 +65,75 @@ async function updateArticleById(article_id, inc_votes) {
       return rows;
     });
 }
-module.exports = { selectArticleById, selectAllArticles, updateArticleById };
+async function insertCommentByArticleId(article_id, msg) {
+  let { username, body } = msg;
+  if (isNaN(article_id)) {
+    return Promise.reject({ status: 400, msg: "Invalid Id" });
+  }
+  if (!username) {
+    return Promise.reject({ status: 400, msg: "User not defined" });
+  }
+  username = username.toLowerCase();
+  // check if article_id and user exists
+  async function checkArticleIdAndUsernameExists(article_id, username) {
+    const dbArticle_id = await db.query(
+      "SELECT article_id FROM articles WHERE article_id = $1",
+      [article_id]
+    );
+    const dbUsername = await db.query(
+      "SELECT username FROM users WHERE username = $1",
+      [username]
+    );
+    if (dbArticle_id.rows.length === 0) {
+      return Promise.reject({ status: 404, msg: "Article not found" });
+    }
+    if (dbUsername.rows.length === 0) {
+      return Promise.reject({ status: 404, msg: "User not found" });
+    }
+  }
+  // check body is not empty
+  if (!body.length) {
+    return Promise.reject({ status: 400, msg: "Invalid Request" });
+  }
+  const doesArticle_idAndUsernameExist = await checkArticleIdAndUsernameExists(
+    article_id,
+    username
+  );
+  if (doesArticle_idAndUsernameExist) {
+    return doesArticle_idAndUsernameExist;
+  }
+
+  const result = await db.query(
+    "INSERT INTO comments (article_id, author, body) VALUES ($1, $2, $3) RETURNING body;",
+    [article_id, username, body]
+  );
+  const { rows } = result;
+  return rows[0];
+}
+
+async function selectAllCommentsByArticleId(article_id) {
+  if (isNaN(article_id)) {
+    return Promise.reject({ status: 400, msg: "Invalid Request" });
+  }
+  async function checkIfArticleIdExists(article_id) {
+    return await db.query("SELECT * FROM articles WHERE article_id = $1", [
+      article_id,
+    ]);
+  }
+  const dbArticle = await checkIfArticleIdExists(article_id);
+  if (dbArticle.rows.length === 0) {
+    return Promise.reject({ status: 404, msg: "No Resource Found" });
+  }
+  return db
+    .query("SELECT * FROM comments WHERE article_id = $1", [article_id])
+    .then(({ rows }) => {
+      return rows;
+    });
+}
+module.exports = {
+  selectArticleById,
+  selectAllArticles,
+  insertCommentByArticleId,
+  selectAllCommentsByArticleId,
+  updateArticleById,
+};
