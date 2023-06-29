@@ -76,8 +76,29 @@ async function insertCommentByArticleId(article_id, msg) {
   const { rows } = result;
   return rows[0];
 }
+
+async function selectAllCommentsByArticleId(article_id) {
+  if (isNaN(article_id)) {
+    return Promise.reject({ status: 400, msg: "Invalid Request" });
+  }
+  async function checkIfArticleIdExists(article_id) {
+    return await db.query("SELECT * FROM articles WHERE article_id = $1", [
+      article_id,
+    ]);
+  }
+  const dbArticle = await checkIfArticleIdExists(article_id);
+  if (dbArticle.rows.length === 0) {
+    return Promise.reject({ status: 404, msg: "No Resource Found" });
+  }
+  return db
+    .query("SELECT * FROM comments WHERE article_id = $1", [article_id])
+    .then(({ rows }) => {
+      return rows;
+    });
+}
 module.exports = {
   selectArticleById,
   selectAllArticles,
   insertCommentByArticleId,
+  selectAllCommentsByArticleId,
 };
