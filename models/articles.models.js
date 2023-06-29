@@ -33,16 +33,23 @@ function selectArticleById(article_id) {
 
 async function insertCommentByArticleId(article_id, msg) {
   let { username, body } = msg;
+  if (isNaN(article_id)) {
+    return Promise.reject({ status: 400, msg: "Invalid Id" });
+  }
+  if (!username) {
+    return Promise.reject({ status: 400, msg: "User not defined" });
+  }
   username = username.toLowerCase();
   // check if article_id and user exists
   async function checkArticleIdAndUsernameExists(article_id, username) {
-      const dbArticle_id = await db.query(
-          "SELECT article_id FROM articles WHERE article_id = $1",
-          [article_id]
-          );
-          const dbUsername = await db.query(
-            "SELECT username FROM users WHERE username = $1",[username]
-          );
+    const dbArticle_id = await db.query(
+      "SELECT article_id FROM articles WHERE article_id = $1",
+      [article_id]
+    );
+    const dbUsername = await db.query(
+      "SELECT username FROM users WHERE username = $1",
+      [username]
+    );
     if (dbArticle_id.rows.length === 0) {
       return Promise.reject({ status: 404, msg: "Article not found" });
     }
@@ -61,13 +68,13 @@ async function insertCommentByArticleId(article_id, msg) {
   if (doesArticle_idAndUsernameExist) {
     return doesArticle_idAndUsernameExist;
   }
-  return db
-    .query(
-      "INSERT INTO comments (article_id, author, body) VALUES ($1, $2, $3) RETURNING body;",[article_id, username, body]
-    )
-    .then(({ rows }) => {
-      return rows;
-    });
+
+  const result = await db.query(
+    "INSERT INTO comments (article_id, author, body) VALUES ($1, $2, $3) RETURNING body;",
+    [article_id, username, body]
+  );
+  const { rows } = result;
+  return rows[0];
 }
 module.exports = {
   selectArticleById,
