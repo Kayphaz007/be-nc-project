@@ -326,7 +326,7 @@ describe("POST: /api/articles/:article_id/comments", () => {
       });
   });
 });
-describe.skip("/api/comments", () => {
+xdescribe("/api/comments", () => {
   test("204: should return no content if succesfully deleted", () => {
     return request(app).delete("/api/comments/:comment_id").expect(204);
   });
