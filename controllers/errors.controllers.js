@@ -1,4 +1,5 @@
 function handleCustomErrors(err, req, res, next) {
+  console.log(err);
   if (err.status && err.msg) {
     res.status(err.status).send({ msg: err.msg });
   } else {
@@ -15,6 +16,7 @@ function handlePostgressErrors(err, req, res, next) {
 }
 
 function handleServerErrors(err, req, res, next) {
+  console.log(err);
   res.status(500).send({ msg: "Internal Server Error" });
 }
 
