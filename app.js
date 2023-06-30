@@ -6,10 +6,10 @@ const {
   handleServerErrors,
 } = require("./controllers/errors.controllers");
 const { getAllApi } = require("./controllers/api.controllers");
-
 const {
   getArticleById,
   getAllArticles,
+  patchArticleById,
   getCommentsByArticleId,
   postCommentByArticleId,
 } = require("./controllers/articles.controllers");
@@ -26,6 +26,8 @@ app.get("/api/articles/:article_id", getArticleById);
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 
 app.post("/api/articles/:article_id/comments", postCommentByArticleId);
+
+app.patch("/api/articles/:article_id", patchArticleById);
 
 app.use(handleCustomErrors);
 app.use(handlePostgressErrors);

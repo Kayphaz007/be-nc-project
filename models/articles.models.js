@@ -1,4 +1,5 @@
 const db = require("../db/connection");
+// const { reduceRight } = require("../db/data/test-data/articles");
 
 function selectAllArticles() {
   return db
@@ -31,6 +32,39 @@ function selectArticleById(article_id) {
     });
 }
 
+async function updateArticleById(article_id, inc_votes) {
+  if (inc_votes === undefined) {
+    return Promise.reject({ status: 400, msg: "Malformed Request" });
+  }
+  if (isNaN(article_id)) {
+    return Promise.reject({ status: 400, msg: "Id NaN" });
+  }
+  //   check if article_id exist in database
+  async function checkIfArticle_idExist(article_id) {
+    const dbResult = await db.query(
+      "SELECT * FROM articles WHERE article_id = $1;",
+      [article_id]
+    );
+    if (dbResult.rows.length === 0) {
+      return Promise.reject({ status: 404, msg: "No Resource Found" });
+    } else {
+      return dbResult.rows[0].votes;
+    }
+  }
+  const doesArticle_idExist = await checkIfArticle_idExist(article_id);
+  if (doesArticle_idExist) {
+    return doesArticle_idExist;
+  }
+  const previousVoteValue = doesArticle_idExist;
+  return db
+    .query("UPDATE articles SET votes = $1 WHERE article_id = $2 RETURNING *", [
+      inc_votes + previousVoteValue,
+      article_id,
+    ])
+    .then(({ rows }) => {
+      return rows;
+    });
+}
 async function insertCommentByArticleId(article_id, msg) {
   let { username, body } = msg;
   if (isNaN(article_id)) {
@@ -101,4 +135,5 @@ module.exports = {
   selectAllArticles,
   insertCommentByArticleId,
   selectAllCommentsByArticleId,
+  updateArticleById,
 };
