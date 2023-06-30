@@ -10,24 +10,47 @@ function selectAllUsers() {
   });
 }
 
-function selectAllArticles() {
-  return db
-    .query(
-      "SELECT articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, article_img_url, COUNT(comment_id) AS comment_count FROM articles JOIN comments ON articles.article_id = comments.article_id GROUP BY articles.article_id ORDER BY articles.created_at DESC;"
-    )
-    .then(({ rows }) => {
-      if (rows.length === 0) {
-        return Promise.reject({
-          status: 404,
-          msg: "No articles found",
-        });
-      }
-      return rows.map((row) => {
-        row.votes = +row.votes;
-        row.comment_count = +row.comment_count;
-        return row;
+function selectAllArticles(topic, sort_by = "created_at", order = "desc") {
+  const orderValues = ["desc", "asc"];
+  const sortByValues = [
+    "created_at",
+    "topic",
+    "article_id",
+    "votes",
+    "article_img_url",
+    "comment_count",
+    "author",
+    "title",
+  ];
+  const queryArray = [];
+  let query =
+    "SELECT articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, article_img_url, COUNT(comment_id) AS comment_count FROM articles JOIN comments ON articles.article_id = comments.article_id ";
+
+  if (topic) {
+    queryArray.push(topic);
+    query += `WHERE topic LIKE $1 `;
+  }
+  if (!sortByValues.includes(sort_by.toLowerCase())) {
+    return Promise.reject({ status: 400, msg: "Bad Request" });
+  }
+  if (!orderValues.includes(order.toLowerCase())) {
+    return Promise.reject({ status: 400, msg: "Bad Request" });
+  }
+  query += `GROUP BY articles.article_id ORDER BY ${sort_by} ${order};`;
+  console.log(query);
+  return db.query(query, queryArray).then(({ rows }) => {
+    if (rows.length === 0) {
+      return Promise.reject({
+        status: 404,
+        msg: "No articles found",
       });
+    }
+    return rows.map((row) => {
+      row.votes = +row.votes;
+      row.comment_count = +row.comment_count;
+      return row;
     });
+  });
 }
 function selectArticleById(article_id) {
   return db

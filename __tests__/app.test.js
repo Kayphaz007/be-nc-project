@@ -72,79 +72,224 @@ describe("200: /api", () => {
   });
 });
 describe("200: /api/articles", () => {
-  test("should get an article by its id", () => {
-    return request(app)
-      .get("/api/articles/5")
-      .expect(200)
-      .then(({ body }) => {
-        const { article } = body;
-        expect(article).toHaveProperty("article_id", 5);
-        expect(article).toHaveProperty("title", expect.any(String));
-        expect(article).toHaveProperty("topic", expect.any(String));
-        expect(article).toHaveProperty("author", expect.any(String));
-        expect(article).toHaveProperty("body", expect.any(String));
-        expect(article).toHaveProperty("created_at", expect.any(String));
-        expect(article).toHaveProperty("votes", expect.any(Number));
-        expect(article).toHaveProperty("article_img_url", expect.any(String));
-      });
-  });
-  test("should return error with msg Not Found for request not in database", () => {
-    return request(app)
-      .get("/api/articles/99999999")
-      .expect(404)
-      .then(({ body }) => {
-        const { msg } = body;
-        expect(msg).toBe("Not Found");
-      });
-  });
-  test("should return error with msg Invalid Input for wrong user input", () => {
-    return request(app)
-      .get("/api/articles/hello")
-      .expect(400)
-      .then(({ body }) => {
-        const { msg } = body;
-        expect(msg).toBe("Invalid Input");
-      });
-  });
-  test("200: should return an array of article objects, each of which should have specific properties", () => {
-    return request(app)
-      .get("/api/articles")
-      .expect(200)
-      .then(({ body }) => {
-        const { articles } = body;
-        articles.forEach((article) => {
-          expect(article).toHaveProperty("author", expect.any(String));
+  describe("/api/articles", () => {
+    test("should get an article by its id", () => {
+      return request(app)
+        .get("/api/articles/5")
+        .expect(200)
+        .then(({ body }) => {
+          const { article } = body;
+          expect(article).toHaveProperty("article_id", 5);
           expect(article).toHaveProperty("title", expect.any(String));
-          expect(article).toHaveProperty("article_id", expect.any(Number));
           expect(article).toHaveProperty("topic", expect.any(String));
+          expect(article).toHaveProperty("author", expect.any(String));
+          expect(article).toHaveProperty("body", expect.any(String));
           expect(article).toHaveProperty("created_at", expect.any(String));
           expect(article).toHaveProperty("votes", expect.any(Number));
           expect(article).toHaveProperty("article_img_url", expect.any(String));
-          expect(article).toHaveProperty("comment_count", expect.any(Number));
         });
-      });
-  });
-  test("should return an array with specific length", () => {
-    return request(app)
-      .get("/api/articles")
-      .expect(200)
-      .then(({ body }) => {
-        const { articles } = body;
-        expect(articles.length).toBe(5);
-      });
-  });
-  test("should ensure articles are sorted by date in descending order", () => {
-    return request(app)
-      .get("/api/articles")
-      .expect(200)
-      .then(({ body }) => {
-        const { articles } = body;
-        expect(articles).toBeSorted({
-          key: "created_at",
-          descending: true,
+    });
+    test("should return error with msg Not Found for request not in database", () => {
+      return request(app)
+        .get("/api/articles/99999999")
+        .expect(404)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe("Not Found");
         });
-      });
+    });
+    test("should return error with msg Invalid Input for wrong user input", () => {
+      return request(app)
+        .get("/api/articles/hello")
+        .expect(400)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe("Invalid Input");
+        });
+    });
+    test("200: should return an array of article objects, each of which should have specific properties", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body }) => {
+          const { articles } = body;
+          articles.forEach((article) => {
+            expect(article).toHaveProperty("author", expect.any(String));
+            expect(article).toHaveProperty("title", expect.any(String));
+            expect(article).toHaveProperty("article_id", expect.any(Number));
+            expect(article).toHaveProperty("topic", expect.any(String));
+            expect(article).toHaveProperty("created_at", expect.any(String));
+            expect(article).toHaveProperty("votes", expect.any(Number));
+            expect(article).toHaveProperty(
+              "article_img_url",
+              expect.any(String)
+            );
+            expect(article).toHaveProperty("comment_count", expect.any(Number));
+          });
+        });
+    });
+    test("should return an array with specific length", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body }) => {
+          const { articles } = body;
+          expect(articles.length).toBe(5);
+        });
+    });
+    test("should ensure articles are sorted by date in descending order", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body }) => {
+          const { articles } = body;
+          expect(articles).toBeSorted({
+            key: "created_at",
+            descending: true,
+          });
+        });
+    });
   });
+  describe("200: /api/articles?Queries", () => {
+    test("should order articles by default descending", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body }) => {
+          const { articles } = body;
+          expect(articles).toBeSorted({
+            key: "created_at",
+            descending: true,
+          });
+        });
+    });
+    test("should order articles by descending when specified", () => {
+      return request(app)
+        .get("/api/articles?order=DESC")
+        .expect(200)
+        .then(({ body }) => {
+          const { articles } = body;
+          expect(articles).toBeSorted({
+            key: "created_at",
+            descending: true,
+          });
+        });
+    });
+    test("should order articles by ascending", () => {
+      return request(app)
+        .get("/api/articles?order=ASC")
+        .expect(200)
+        .then(({ body }) => {
+          const { articles } = body;
+          expect(articles).toBeSorted({
+            key: "created_at",
+            ascending: true,
+          });
+        });
+    });
+    describe("suite of test for sort_by", () => {
+      test("should allow user sort by topic", () => {
+        return request(app)
+          .get("/api/articles?sort_by=topic")
+          .expect(200)
+          .then(({ body }) => {
+            const { articles } = body;
+            expect(articles).toBeSorted({
+              key: "topic",
+              descending: true,
+            });
+          });
+      });
+      test("should allow user sort by article_id", () => {
+        return request(app)
+          .get("/api/articles?sort_by=article_id")
+          .expect(200)
+          .then(({ body }) => {
+            const { articles } = body;
+            articles;
+            expect(articles).toBeSorted({
+              key: "article_id",
+              descending: true,
+            });
+          });
+      });
+      test("should allow user sort by votes", () => {
+        return request(app)
+          .get("/api/articles?sort_by=votes")
+          .expect(200)
+          .then(({ body }) => {
+            const { articles } = body;
+            expect(articles).toBeSorted({
+              key: "votes",
+              descending: true,
+            });
+          });
+      });
+      test("should allow user sort by article_img_url", () => {
+        return request(app)
+          .get("/api/articles?sort_by=article_img_url")
+          .expect(200)
+          .then(({ body }) => {
+            const { articles } = body;
+            expect(articles).toBeSorted({
+              key: "article_img_url",
+              descending: true,
+            });
+          });
+      });
+      test("should allow user sort by comment_count", () => {
+        return request(app)
+          .get("/api/articles?sort_by=comment_count")
+          .expect(200)
+          .then(({ body }) => {
+            const { articles } = body;
+            expect(articles).toBeSorted({
+              key: "comment_count",
+              descending: true,
+            });
+          });
+      });
+      test("should allow user sort by author", () => {
+        return request(app)
+          .get("/api/articles?sort_by=author")
+          .expect(200)
+          .then(({ body }) => {
+            const { articles } = body;
+            expect(articles).toBeSorted({
+              key: "author",
+              descending: true,
+            });
+          });
+      });
+      test("should allow user sort by title", () => {
+        return request(app)
+          .get("/api/articles?sort_by=title")
+          .expect(200)
+          .then(({ body }) => {
+            const { articles } = body;
+            expect(articles).toBeSorted({
+              key: "title",
+              descending: true,
+            });
+          });
+      });
+    });
+    test('should get articles by topic "cats"', () => {
+      return request(app)
+        .get("/api/articles?topic=cats")
+        .expect(200)
+        .then(({ body }) => {
+          const { articles } = body;
+          articles.forEach((article) => {
+            expect(article.topic).toBe("cats");
+          });
+        });
+    });
+    test("400 should return error for invalid query", () => {
+      return request(app).get("/api/articles?sort_by=cats").expect(400);
+    });
+  });
+
   describe("PATCH: /api/articles/:article_id", () => {
     test("should increment the vote of an article", () => {
       return request(app)
