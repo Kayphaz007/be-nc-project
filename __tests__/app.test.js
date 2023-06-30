@@ -326,3 +326,14 @@ describe("POST: /api/articles/:article_id/comments", () => {
       });
   });
 });
+describe("/api/comments", () => {
+  test("204: should return no content if succesfully deleted", () => {
+    return request(app).delete("/api/comments/5").expect(204);
+  });
+  test("400: should return error for comment_id NaN", () => {
+    return request(app).delete("/api/comments/hello").expect(400);
+  });
+  test("404: should return error for valid comment_id but no resource found", () => {
+    return request(app).delete("/api/comments/9999").expect(404);
+  });
+});

@@ -12,6 +12,7 @@ const {
   patchArticleById,
   getCommentsByArticleId,
   postCommentByArticleId,
+  deleteCommentByCommentId,
 } = require("./controllers/articles.controllers");
 const app = express();
 
@@ -23,11 +24,14 @@ app.get("/api/topics", getAllTopics);
 
 app.get("/api/articles", getAllArticles);
 app.get("/api/articles/:article_id", getArticleById);
+
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 
 app.post("/api/articles/:article_id/comments", postCommentByArticleId);
 
 app.patch("/api/articles/:article_id", patchArticleById);
+
+app.delete("/api/comments/:comment_id", deleteCommentByCommentId);
 
 app.use(handleCustomErrors);
 app.use(handlePostgressErrors);
