@@ -5,7 +5,18 @@ const {
   selectArticleById,
   updateArticleById,
   removeCommentByCommentId,
+  selectAllUsers,
 } = require("../models/articles.models");
+
+function getAllUsers(req, res, next) {
+  selectAllUsers()
+    .then((result) => {
+      res.status(200).send({ users: result });
+    })
+    .catch((err) => {
+      next(err);
+    });
+}
 
 function getAllArticles(req, res, next) {
   selectAllArticles()
@@ -80,4 +91,5 @@ module.exports = {
   postCommentByArticleId,
   patchArticleById,
   deleteCommentByCommentId,
+  getAllUsers,
 };
