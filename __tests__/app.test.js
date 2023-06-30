@@ -11,6 +11,30 @@ beforeEach(() => {
 afterAll(() => {
   if (db.end) db.end();
 });
+describe("200: /api/users", () => {
+  test("200: should return an array of user objects, each of which should have specific properties", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body }) => {
+        const { users } = body;
+        users.forEach((user) => {
+          expect(user).toHaveProperty("username", expect.any(String));
+          expect(user).toHaveProperty("name", expect.any(String));
+          expect(user).toHaveProperty("avatar_url", expect.any(String));
+        });
+      });
+  });
+  test("should return an array with specific length", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body }) => {
+        const { users } = body;
+        expect(users.length).toBe(4);
+      });
+  });
+});
 describe("200: /api/topics", () => {
   test("should return an array of topic objects", () => {
     return request(app)
