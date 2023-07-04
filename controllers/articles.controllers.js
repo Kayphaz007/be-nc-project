@@ -19,7 +19,8 @@ function getAllUsers(req, res, next) {
 }
 
 function getAllArticles(req, res, next) {
-  selectAllArticles()
+  const { topic, sort_by, order } = req.query;
+  selectAllArticles(topic, sort_by, order)
     .then((result) => {
       res.status(200).send({ articles: result });
     })
