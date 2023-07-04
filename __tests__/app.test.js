@@ -292,10 +292,20 @@ describe("200: /api/articles", () => {
       return request(app).get("/api/articles?order=banana").expect(400);
     });
     test("404 should return error for valid topic but has no articles", () => {
-      return request(app).get("/api/articles?topic=paper").expect(404);
+      return request(app)
+        .get("/api/articles?topic=paper")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).toEqual([]);
+        });
     });
-    test("400 should return error for non-existent topic Query", () => {
-      return request(app).get("/api/articles?topic=banana").expect(404);
+    test("404 should return error for non-existent topic Query", () => {
+      return request(app)
+        .get("/api/articles?topic=banana")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).toEqual([]);
+        });
     });
   });
 

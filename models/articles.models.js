@@ -37,14 +37,13 @@ function selectAllArticles(topic, sort_by = "created_at", order = "desc") {
     return Promise.reject({ status: 400, msg: "Bad Request" });
   }
   query += `GROUP BY articles.article_id ORDER BY ${sort_by} ${order};`;
-  console.log(query);
   return db.query(query, queryArray).then(({ rows }) => {
-    if (rows.length === 0) {
-      return Promise.reject({
-        status: 404,
-        msg: "No articles found",
-      });
-    }
+    // if (rows.length === 0) {
+    //   return Promise.reject({
+    //     status: 404,
+    //     msg: "No articles found",
+    //   });
+    // }
     return rows.map((row) => {
       row.votes = +row.votes;
       row.comment_count = +row.comment_count;
