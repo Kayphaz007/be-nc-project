@@ -53,9 +53,13 @@ function selectAllArticles(topic, sort_by = "created_at", order = "desc") {
 }
 function selectArticleById(article_id) {
   return db
-    .query("SELECT * FROM articles WHERE article_id = $1", [article_id])
+    .query(
+      "SELECT articles.author, title, articles.article_id, topic, articles.created_at, articles.body, articles.votes, article_img_url, COUNT(comment_id) AS comment_count FROM articles JOIN comments ON articles.article_id = comments.article_id WHERE articles.article_id = $1 GROUP BY articles.article_id ORDER BY articles.created_at DESC;",
+      [article_id]
+    )
     .then(({ rows }) => {
       if (rows.length != 0) {
+        console.log(rows);
         return rows[0];
       } else {
         return Promise.reject({ status: 404, msg: "Not Found" });
