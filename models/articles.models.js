@@ -59,7 +59,6 @@ function selectArticleById(article_id) {
     )
     .then(({ rows }) => {
       if (rows.length != 0) {
-        console.log(rows);
         return rows[0];
       } else {
         return Promise.reject({ status: 404, msg: "Not Found" });
@@ -87,7 +86,7 @@ async function updateArticleById(article_id, inc_votes) {
     }
   }
   const doesArticle_idExist = await checkIfArticle_idExist(article_id);
-  if (doesArticle_idExist) {
+  if (typeof doesArticle_idExist === "object") {
     return doesArticle_idExist;
   }
   const previousVoteValue = doesArticle_idExist;
